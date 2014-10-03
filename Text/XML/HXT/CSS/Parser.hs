@@ -109,6 +109,8 @@ pseudo = do
         () | Just p <- findPseudoNthClass s -> do
             arg <- char '(' *> nth <* char ')'
             return (PseudoNth $ p arg)
+        () | map toLower s == "not" ->
+            fail "negation is not allowed here"
         () -> fail $ "'" ++ s ++ "' is not a valid pseudo-class"
 
 nth :: Parser Nth
