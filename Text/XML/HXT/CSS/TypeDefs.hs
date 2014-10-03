@@ -15,8 +15,8 @@ For example,
 @
 
 is not valid according to the spec, as double negation is not allowed.
-Note that the parser from "Text.XML.HXT.CSS.Parser", never produces
-invalid selectors.
+Note that 'Text.XML.HXT.CSS.Parser.parseCSS' never produces invalid
+selectors.
 -}
 
 module Text.XML.HXT.CSS.TypeDefs where
