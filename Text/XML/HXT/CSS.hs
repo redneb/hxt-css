@@ -3,9 +3,7 @@ Module      : Text.XML.HXT.CSS
 
 Stability   : provisional
 
-Turn a CSS selector into an HXT arrow. Matching is done in a case insensitive
-fashion. This module does not distinguish between XML and (X)TML and therefore
-it will operate case insensitively even on XML documents.
+Turn a CSS selector into an HXT arrow.
 -}
 
 {-# LANGUAGE FlexibleInstances #-}
@@ -26,7 +24,6 @@ module Text.XML.HXT.CSS
     where
 
 import Data.Char
-import Data.Function
 import Data.Maybe
 import Data.List
 import Data.List.Split
@@ -103,24 +100,25 @@ instance Css SimpleSelectorSeq where
 
 instance Css SimpleSelector where
     select UniversalSelector = this
-    select (TypeSelector tagName) = withoutNav $ hasNameCI tagName
-    select (IdSelector nodeId) = hasAttrValueN "id" (ciEq nodeId)
+    select (TypeSelector tagName) = withoutNav $ hasName tagName
+    select (IdSelector nodeId) =
+        withoutNav $ hasAttrValue "id" (== nodeId)
     select (ClassSelector className) =
-        hasAttrValueN "class" (hasWord className)
+        withoutNav $ hasAttrValue "class" (hasWord className)
     select (AttrSelector attrb sel) =
-        hasAttrValueN attrb p
+        withoutNav $ hasAttrValue attrb p
       where
         p = case sel of
                 AttrExists -> const True
-                AttrEq val -> ciEq val
+                AttrEq val -> (== val)
                 AttrContainsSp val -> hasWord val
                 AttrBeginHy val -> hypenPrefix val
-                AttrPrefix val -> on isPrefixOf fc val
-                AttrSuffix val -> on isSuffixOf fc val
-                AttrSubstr val -> on isInfixOf fc val
+                AttrPrefix val -> isPrefixOf val
+                AttrSuffix val -> isSuffixOf val
+                AttrSubstr val -> isInfixOf val
         hypenPrefix s1 s2 =
             case wordsBy (== '-') s2 of
-                w : _ | ciEq s1 w -> True
+                w : _ | s1 == w -> True
                 _ -> False
     select (Pseudo pseudo) = select pseudo
     select (PseudoNth pseudo) = select pseudo
@@ -189,10 +187,9 @@ nthElemOfTypeFun
     -> (Int -> Bool) -> XmlNavTree -> [XmlNavTree]
 nthElemOfTypeFun axis p x = nthElemFun axis' p x
   where
-    axis' = filter ((== xNm) . fc . getNm) . axis
-    xNm = fc (getNm x)
-    getNm = fromMaybe "" . XN.getQualifiedName .
-        (\(XN.NTree n _) -> n) . ntree
+    axis' = filter ((== xNm) . getNm) . axis
+    xNm = getNm x
+    getNm = XN.getQualifiedName . (\(XN.NTree n _) -> n) . ntree
 
 nthElemFun
     :: (XmlNavTree -> [XmlNavTree])
@@ -207,26 +204,8 @@ isElemNodeN = isElemNode . ntree
 isElemN :: ArrowXml a => a XmlNavTree XmlNavTree
 isElemN = withoutNav isElem
 
-{-hasAttrN :: ArrowXml a => String -> a XmlNavTree XmlNavTree-}
-{-hasAttrN n = withoutNav $ (getAttrl >>> hasNameCI n) `guards` this-}
-
-hasAttrValueN
-    :: ArrowXml a
-    => String -> (String -> Bool) -> a XmlNavTree XmlNavTree
-hasAttrValueN n p = withoutNav $
-    (getAttrl >>> hasNameCI n >>> xshow getChildren >>> isA p)  `guards` this
-
-hasNameCI :: ArrowXml a => String -> a XmlTree XmlTree
-hasNameCI n = (getName >>> isA (ciEq n)) `guards` this
-
 hasWord :: String -> String -> Bool
-hasWord w = any (ciEq w) . wordsBy isSpace
-
-ciEq :: String -> String -> Bool
-ciEq = on (==) fc
-
-fc :: String -> String
-fc = map toLower
+hasWord w = any (== w) . wordsBy isSpace
 
 {- $supported_selectors
 * Element selectors: @*@, @E@, @.class@, @#id@
