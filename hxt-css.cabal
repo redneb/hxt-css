@@ -1,5 +1,5 @@
 name:                hxt-css
-version:             0.1.0.0
+version:             0.1.0.1
 synopsis:            CSS selectors for HXT
 description:
   This package makes it possible to easily traverse (X)HTML/XML documents
