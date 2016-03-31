@@ -155,7 +155,7 @@ stringLit = string1 <|> string2
     string1 =
         char '"' *>
             many (noneOf "\n\r\f\\\"" <|> nl <|> nonascii {- <|> escape -})
-                <* char '*'
+                <* char '"'
     string2 =
         char '\'' *>
             many (noneOf "\n\r\f\\'"  <|> nl <|> nonascii {- <|> escape -})
