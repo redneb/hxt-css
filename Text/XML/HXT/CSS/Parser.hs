@@ -16,6 +16,7 @@ import Text.Parsec.String
 import Control.Monad
 import Control.Applicative hiding (many, (<|>))
 import Data.Char
+import Prelude
 
 import Text.XML.HXT.CSS.TypeDefs
 
@@ -177,7 +178,7 @@ nl = choice
     , void $ char '\f'
     ] >> return '\n'
 
-integer :: (Integral a, Read a) => Parser a
+integer :: Read a => Parser a
 integer = read <$> many1 digit
 
 spaces :: Parser ()
