@@ -1,4 +1,4 @@
-#### X.X.X.X *XXXX-XX-XX*
+#### 0.1.0.3 *2016-08-23*
 
 * Silence warnings on recent versions of GHC
 
