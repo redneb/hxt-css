@@ -3,7 +3,7 @@ version:             0.1.0.3
 synopsis:            CSS selectors for HXT
 description:
   This package makes it possible to easily traverse (X)HTML/XML documents
-  using CSS selectors. It supports all CSS level 3 selectors except the
+  using CSS selectors. It supports all CSS level 3 selectors except for the
   ones that do not make sense outside a web browser (e.g. such as @:hover@
   or @::first-letter@). Also, there is no support for namespaced selectors.
 homepage:            https://github.com/redneb/hxt-css
